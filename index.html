@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2026</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #000;
+            font-family: 'Noto Sans Thai', sans-serif;
+            overscroll-behavior: none; 
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            image-rendering: optimizeQuality; 
+        }
+
+        /* --- Layers ท้องฟ้า --- */
+        .sky-day {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #FFD700 0%, #FFC107 40%, #FF9800 100%);
+            z-index: 1;
+        }
+
+        .sky-sunset {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #4a3258 0%, #a64d4d 35%, #ff7733 70%, #ffb347 100%);
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .sky-night {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #151520 100%);
+            opacity: 0;
+            z-index: 3;
+        }
+
+        /* --- พระอาทิตย์ --- */
+        .sun {
+            position: absolute;
+            width: 15vw;
+            height: 15vw;
+            min-width: 100px; min-height: 100px; 
+            border-radius: 50%;
+            top: 25%;
+            left: 35%; 
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            
+            background: radial-gradient(circle, #ffffff 10%, #fff7cc 30%, #ffdb4d 60%, #ffc107 100%);
+            
+            box-shadow: 
+                0 0 20px 5px #ffffff,
+                0 0 50px 20px #ffeb3b,
+                0 0 100px 50px rgba(255, 165, 0, 0.6),
+                0 0 180px 80px rgba(255, 69, 0, 0.3);
+            
+            filter: blur(0.5px);
+        }
+
+        /* --- ดวงดาว --- */
+        .stars-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 2px white;
+        }
+
+        /* --- ภูเขา --- */
+        .mountains {
+            position: absolute;
+            bottom: -5%;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23000000' fill-opacity='1' d='M0,224L60,213.3C120,203,240,181,360,181.3C480,181,600,203,720,224C840,245,960,267,1080,261.3C1200,256,1320,224,1380,208L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            z-index: 10;
+        }
+
+        /* --- กลุ่มข้อความ --- */
+        .text-container {
+            position: absolute;
+            z-index: 20;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .msg {
+            position: absolute;
+            text-align: center;
+            color: white;
+            opacity: 0;
+            transform: translateY(30px); 
+            width: 100%;
+            max-width: 500px;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.9);
+        }
+
+        .msg h1 { font-size: 2rem; margin-bottom: 15px; font-weight: 600; line-height: 1.3; }
+        .msg p { font-size: 1.2rem; font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.95); }
+
+        .highlight { color: #ffffff; font-weight: 600; }
+
+        .msg-1 { opacity: 1; transform: translateY(0); }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            color: rgba(255,255,255,0.8);
+            z-index: 30;
+            animation: bounce 2s infinite;
+            font-size: 0.9rem;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="sky-day"></div>
+        <div class="sky-sunset"></div>
+        <div class="sky-night"></div>
+
+        <div class="stars-container" id="stars"></div>
+        <div class="sun"></div>
+        <div class="mountains"></div>
+
+        <div class="text-container">
+            <div class="msg msg-1">
+                <h1>Happy New Year <span class="highlight">2026</span></h1>
+                <p>Scroll Down</p>
+            </div>
+            <div class="msg msg-2">
+                <h1>สวัสดีปีใหม่ย้อนหลังนะครับ</h1>
+                <p>ขอให้ปีนี้เป็นปีที่ดีของพี่นะ<br>มีความสุขในทุกๆ วัน <span class="highlight">ยิ้มได้เยอะๆ</span> นะครับ</p>
+            </div>
+            <div class="msg msg-3">
+                <h1>ขอโทษที...</h1>
+                <p>ปีนี้ยุ่งๆ เลยไม่ได้เตรียมของขวัญไว้ให้<br><span class="highlight">อย่าเพิ่งโกรธกันนะ</span></p>
+            </div>
+            <div class="msg msg-4">
+                <p>ตั้งใจเขียนโค้ดทำหน้านี้ให้เลยนะ<br>หวังว่าจะ <span class="highlight">ถูกใจนะครับ</span></p>
+            </div>
+            <div class="msg msg-5">
+                <h1>แล้วก็...</h1>
+                <p>เบาๆ เรื่องของหวานบ้างนะ<br>หาเวลาไป <span class="highlight">ออกกำลังกาย</span> บ้าง สุขภาพสำคัญที่สุด</p>
+            </div>
+            <div class="msg msg-6">
+                <p>ไว้ว่างๆ ไป <span class="highlight">ดูดาวด้วยกัน</span> อีกนะ<br>Happy New Year ครับ ❤️</p>
+            </div>
+        </div>
+        
+        <div class="scroll-hint">เลื่อนลงเพื่ออ่านต่อ ⬇</div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 2 + 0.5;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 80}%`;
+            star.style.opacity = Math.random();
+            starsContainer.appendChild(star);
+        }
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".scene",
+                start: "top top",
+                end: "+=15000", 
+                scrub: 1, 
+                pin: true,
+                snap: {
+                    snapTo: "labels", // [แก้ไข] เปลี่ยนมาใช้ Snap to Labels เพื่อความแม่นยำ
+                    duration: { min: 0.2, max: 0.8 },
+                    delay: 0.1,
+                    ease: "power1.inOut"
+                }
+            }
+        });
+
+        // จุดเริ่มต้น (Label: start)
+        tl.addLabel("start");
+
+        // STEP 1: Msg 1 -> Msg 2 (Day -> Sunset)
+        tl.to(".msg-1", { opacity: 0, y: -25, duration: 0.5 })
+          .to(".sun", { 
+              y: "35vh", scale: 0.9,
+              backgroundImage: "radial-gradient(circle, #fff 5%, #ffc107 30%, #ff8c00 60%, #ff4500 100%)",
+              boxShadow: "0 0 30px 10px #ff8c00, 0 0 80px 40px rgba(255, 69, 0, 0.6), 0 0 150px 80px rgba(200, 50, 0, 0.3)",
+              duration: 1
+          }, "<")
+          .to(".sky-sunset", { opacity: 1, duration: 1 }, "<")
+          .fromTo(".msg-2", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
+        
+        tl.addLabel("msg2"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 2
+
+        // STEP 2: Msg 2 -> Msg 3 (Sunset -> Deep Sunset)
+        tl.to(".msg-2", { opacity: 0, y: -25, duration: 0.5 })
+          .to(".sun", { 
+              y: "65vh", scale: 0.8,
+              backgroundImage: "radial-gradient(circle, #ff8c00 10%, #ff4500 50%, #d40000 100%)",
+              boxShadow: "0 0 20px 5px #ff4500, 0 0 60px 30px rgba(212, 0, 0, 0.5)",
+              duration: 1 
+          }, "<")
+          .fromTo(".msg-3", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
+        
+        tl.addLabel("msg3"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 3
+
+        // STEP 3: Msg 3 -> Msg 4 (Deep Sunset -> Night Sky BUT NO STARS)
+        tl.to(".msg-3", { opacity: 0, y: -25, duration: 0.5 })
+          .to(".sun", { y: "120vh", opacity: 0, duration: 1 }, "<") 
+          .to(".sky-night", { opacity: 1, duration: 1 }, "<") 
+          .fromTo(".msg-4", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
+        
+        tl.addLabel("msg4"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 4
+
+        // STEP 4: Msg 4 -> Msg 5 (Night Sky -> Stars Appear)
+        tl.to(".msg-4", { opacity: 0, y: -25, duration: 0.5 })
+          .to(".stars-container", { opacity: 1, duration: 1 }, "<")
+          .fromTo(".msg-5", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
+        
+        tl.addLabel("msg5"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 5
+
+        // STEP 5: Msg 5 -> Msg 6
+        tl.to(".msg-5", { opacity: 0, y: -25, duration: 0.5 })
+          .fromTo(".msg-6", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 });
+        
+        tl.addLabel("msg6"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 6 (จบ)
+
+    </script>
+</body>
+</html>
