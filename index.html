@@ -71,30 +71,57 @@
             filter: blur(0.5px);
         }
 
-        /* --- [แก้ไข] พระจันทร์ (เพิ่มความฟุ้งแบบจัดเต็ม) --- */
+        /* --- [แก้ไขหายขาด: แยกชั้นแสงกับชั้นตัดขอบ] --- */
         .moon-container {
+            /* 1. ตำแหน่งและการขยับ (เหมือนเดิม) */
             position: absolute;
             top: 20%; left: 75%;
             transform: translate(-50%, -50%) translateY(100vh);
             z-index: 4;
             opacity: 0;
-            /* ใช้ drop-shadow ซ้อนกัน 3 ชั้น: 
-               1. ชั้นใน (ชัด) 
-               2. ชั้นกลาง (ฟุ้ง) 
-               3. ชั้นนอก (ออร่ากระจาย) */
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) 
-                    drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)) 
-                    drop-shadow(0 0 60px rgba(255, 255, 255, 0.4));
+
+            /* 2. ขนาด */
+            width: 12vw; height: 12vw;
+            min-width: 80px; min-height: 80px;
+            
+            /* 3. ทำให้กล่องเป็นวงกลม */
+            border-radius: 50%;
+            background: transparent;
+
+            /* 4. ใส่แสงฟุ้งที่ 'กล่องนอก' (จะไม่โดนตัดขอบแล้ว!) */
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.9),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 80px rgba(255, 255, 255, 0.4);
+        }
+
+        .moon-clipper {
+            /* 5. เลเยอร์นี้ทำหน้าที่ 'กรรไกร' ตัดขอบดำทิ้ง */
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            overflow: hidden; /* คำสั่งตัดส่วนเกิน */
+            
+            /* แก้บั๊ก iPhone ให้ตัดขอบเนียนๆ */
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            
+            /* จัดตำแหน่งให้อยู่ตรงกลาง */
+            position: relative;
         }
 
         .moon-img {
-            width: 12vw; height: auto; /* ขยายขนาดขึ้นนิดหน่อยให้รับกับแสงฟุ้ง */
-            min-width: 80px;
-            display: block;
-            /* เพิ่มความสว่างให้ตัวรูปพระจันทร์เองด้วย */
+            /* 6. ซูมรูปให้ใหญ่กว่ากรรไกรนิดนึง (110%) เพื่อดันขอบดำออกไปให้โดนตัด */
+            width: 110%; 
+            height: 110%;
+            
+            /* ดึงรูปกลับมาให้อยู่ตรงกลาง (เพราะเราซูมมัน) */
+            object-fit: cover;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            
+            /* ปรับแสงสีรูปภาพ */
             filter: brightness(1.2) contrast(1.1);
         }
-
         /* --- ดวงดาว --- */
         .stars-container {
             position: absolute;
@@ -183,7 +210,9 @@
         <div class="sun"></div>
         
         <div class="moon-container">
-            <img src="moon.png" alt="Moon" class="moon-img">
+            <div class="moon-clipper">
+                <img src="moon.png" alt="Moon" class="moon-img">
+            </div>
         </div>
 
         <div class="mountains"></div>
@@ -250,7 +279,7 @@
 
         tl.addLabel("start");
 
-        // STEP 1
+        // STEP 1: Sun High -> Sun Mid
         tl.to(".msg-1", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { 
               y: "35vh", scale: 0.9,
@@ -262,7 +291,7 @@
           .fromTo(".msg-2", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg2");
 
-        // STEP 2
+        // STEP 2: Sun Mid -> Sun Low (Deep Red)
         tl.to(".msg-2", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { 
               y: "65vh", scale: 0.8,
@@ -273,23 +302,28 @@
           .fromTo(".msg-3", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg3");
 
-        // STEP 3: Moon rises (with super glow)
+        // STEP 3: Sun Gone -> MOON PHASE 1 (Low Sky / ขอบล่าง)
         tl.to(".msg-3", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { y: "120vh", opacity: 0, duration: 1 }, "<")
           .to(".sky-night", { opacity: 1, duration: 1 }, "<")
-          .to(".moon-container", { opacity: 1, y: 0, duration: 1 }, "<") 
+          // พระจันทร์ขึ้นมาแค่ 60vh (อยู่ต่ำๆ เหนือภูเขา)
+          .to(".moon-container", { opacity: 1, y: "60vh", duration: 1 }, "<") 
           .fromTo(".msg-4", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg4");
 
-        // STEP 4: Stars appear
+        // STEP 4: MOON PHASE 2 (Mid Sky / กลางจอ)
         tl.to(".msg-4", { opacity: 0, y: -25, duration: 0.5 })
           .to(".stars-container", { opacity: 1, duration: 1 }, "<")
+          // พระจันทร์ขยับขึ้นมาที่ 30vh
+          .to(".moon-container", { y: "30vh", duration: 1 }, "<")
           .fromTo(".msg-5", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg5");
 
-        // STEP 5
+        // STEP 5: MOON PHASE 3 (High Sky / บนสุด)
         tl.to(".msg-5", { opacity: 0, y: -25, duration: 0.5 })
-          .fromTo(".msg-6", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 });
+          // พระจันทร์ขยับขึ้นไปที่ 0vh (จุดที่เราตั้งไว้ใน CSS คือ Top 20%)
+          .to(".moon-container", { y: "0vh", duration: 1 }, "<")
+          .fromTo(".msg-6", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg6");
 
     </script>
