@@ -60,24 +60,34 @@
         /* --- พระอาทิตย์ --- */
         .sun {
             position: absolute;
-            width: 15vw;
-            height: 15vw;
+            width: 15vw; height: 15vw;
             min-width: 100px; min-height: 100px; 
             border-radius: 50%;
-            top: 25%;
-            left: 35%; 
+            top: 25%; left: 35%; 
             transform: translate(-50%, -50%);
             z-index: 4;
-            
             background: radial-gradient(circle, #ffffff 10%, #fff7cc 30%, #ffdb4d 60%, #ffc107 100%);
-            
-            box-shadow: 
-                0 0 20px 5px #ffffff,
-                0 0 50px 20px #ffeb3b,
-                0 0 100px 50px rgba(255, 165, 0, 0.6),
-                0 0 180px 80px rgba(255, 69, 0, 0.3);
-            
+            box-shadow: 0 0 20px 5px #ffffff, 0 0 50px 20px #ffeb3b, 0 0 100px 50px rgba(255, 165, 0, 0.6), 0 0 180px 80px rgba(255, 69, 0, 0.3);
             filter: blur(0.5px);
+        }
+
+        /* --- พระจันทร์ (ใช้รูป PNG) --- */
+        .moon-container {
+            position: absolute;
+            top: 20%; left: 75%;
+            transform: translate(-50%, -50%) translateY(100vh); /* เริ่มต้นซ่อนอยู่ใต้จอ */
+            z-index: 4;
+            opacity: 0;
+            /* เพิ่มแสงฟุ้งรอบๆ ตัว Container */
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+        }
+
+        .moon-img {
+            width: 10vw; height: auto; /* ปรับขนาดตามต้องการ */
+            min-width: 70px;
+            display: block;
+            /* เพิ่มความสว่างให้รูปนิดหน่อยเพื่อให้เข้ากับแสงฟุ้ง */
+            filter: brightness(1.1);
         }
 
         /* --- ดวงดาว --- */
@@ -128,7 +138,7 @@
             text-align: center;
             color: white;
             opacity: 0;
-            transform: translateY(30px); 
+            transform: translateY(25px); 
             width: 100%;
             max-width: 500px;
             text-shadow: 0 2px 15px rgba(0,0,0,0.9);
@@ -166,6 +176,11 @@
 
         <div class="stars-container" id="stars"></div>
         <div class="sun"></div>
+        
+        <div class="moon-container">
+            <img src="moon.png" alt="Moon" class="moon-img">
+        </div>
+
         <div class="mountains"></div>
 
         <div class="text-container">
@@ -220,7 +235,7 @@
                 scrub: 1, 
                 pin: true,
                 snap: {
-                    snapTo: "labels", // [แก้ไข] เปลี่ยนมาใช้ Snap to Labels เพื่อความแม่นยำ
+                    snapTo: "labels",
                     duration: { min: 0.2, max: 0.8 },
                     delay: 0.1,
                     ease: "power1.inOut"
@@ -228,10 +243,9 @@
             }
         });
 
-        // จุดเริ่มต้น (Label: start)
         tl.addLabel("start");
 
-        // STEP 1: Msg 1 -> Msg 2 (Day -> Sunset)
+        // STEP 1
         tl.to(".msg-1", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { 
               y: "35vh", scale: 0.9,
@@ -241,10 +255,9 @@
           }, "<")
           .to(".sky-sunset", { opacity: 1, duration: 1 }, "<")
           .fromTo(".msg-2", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
-        
-        tl.addLabel("msg2"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 2
+        tl.addLabel("msg2");
 
-        // STEP 2: Msg 2 -> Msg 3 (Sunset -> Deep Sunset)
+        // STEP 2
         tl.to(".msg-2", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { 
               y: "65vh", scale: 0.8,
@@ -253,29 +266,27 @@
               duration: 1 
           }, "<")
           .fromTo(".msg-3", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
-        
-        tl.addLabel("msg3"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 3
+        tl.addLabel("msg3");
 
-        // STEP 3: Msg 3 -> Msg 4 (Deep Sunset -> Night Sky BUT NO STARS)
+        // STEP 3: Sun down, Sky dark, Moon rises (No stars)
         tl.to(".msg-3", { opacity: 0, y: -25, duration: 0.5 })
-          .to(".sun", { y: "120vh", opacity: 0, duration: 1 }, "<") 
-          .to(".sky-night", { opacity: 1, duration: 1 }, "<") 
+          .to(".sun", { y: "120vh", opacity: 0, duration: 1 }, "<")
+          .to(".sky-night", { opacity: 1, duration: 1 }, "<")
+          // [แก้ไข] เปลี่ยนเป้าหมายเป็น .moon-container แทน .moon เดิม
+          .to(".moon-container", { opacity: 1, y: 0, duration: 1 }, "<") 
           .fromTo(".msg-4", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
-        
-        tl.addLabel("msg4"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 4
+        tl.addLabel("msg4");
 
-        // STEP 4: Msg 4 -> Msg 5 (Night Sky -> Stars Appear)
+        // STEP 4: Stars appear
         tl.to(".msg-4", { opacity: 0, y: -25, duration: 0.5 })
           .to(".stars-container", { opacity: 1, duration: 1 }, "<")
           .fromTo(".msg-5", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
-        
-        tl.addLabel("msg5"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 5
+        tl.addLabel("msg5");
 
-        // STEP 5: Msg 5 -> Msg 6
+        // STEP 5
         tl.to(".msg-5", { opacity: 0, y: -25, duration: 0.5 })
           .fromTo(".msg-6", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 });
-        
-        tl.addLabel("msg6"); // [แก้ไข] ปักหมุดเมื่อจบ Msg 6 (จบ)
+        tl.addLabel("msg6");
 
     </script>
 </body>
