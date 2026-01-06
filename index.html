@@ -71,23 +71,28 @@
             filter: blur(0.5px);
         }
 
-        /* --- พระจันทร์ (ใช้รูป PNG) --- */
+        /* --- [แก้ไข] พระจันทร์ (เพิ่มความฟุ้งแบบจัดเต็ม) --- */
         .moon-container {
             position: absolute;
             top: 20%; left: 75%;
-            transform: translate(-50%, -50%) translateY(100vh); /* เริ่มต้นซ่อนอยู่ใต้จอ */
+            transform: translate(-50%, -50%) translateY(100vh);
             z-index: 4;
             opacity: 0;
-            /* เพิ่มแสงฟุ้งรอบๆ ตัว Container */
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+            /* ใช้ drop-shadow ซ้อนกัน 3 ชั้น: 
+               1. ชั้นใน (ชัด) 
+               2. ชั้นกลาง (ฟุ้ง) 
+               3. ชั้นนอก (ออร่ากระจาย) */
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) 
+                    drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)) 
+                    drop-shadow(0 0 60px rgba(255, 255, 255, 0.4));
         }
 
         .moon-img {
-            width: 10vw; height: auto; /* ปรับขนาดตามต้องการ */
-            min-width: 70px;
+            width: 12vw; height: auto; /* ขยายขนาดขึ้นนิดหน่อยให้รับกับแสงฟุ้ง */
+            min-width: 80px;
             display: block;
-            /* เพิ่มความสว่างให้รูปนิดหน่อยเพื่อให้เข้ากับแสงฟุ้ง */
-            filter: brightness(1.1);
+            /* เพิ่มความสว่างให้ตัวรูปพระจันทร์เองด้วย */
+            filter: brightness(1.2) contrast(1.1);
         }
 
         /* --- ดวงดาว --- */
@@ -268,11 +273,10 @@
           .fromTo(".msg-3", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg3");
 
-        // STEP 3: Sun down, Sky dark, Moon rises (No stars)
+        // STEP 3: Moon rises (with super glow)
         tl.to(".msg-3", { opacity: 0, y: -25, duration: 0.5 })
           .to(".sun", { y: "120vh", opacity: 0, duration: 1 }, "<")
           .to(".sky-night", { opacity: 1, duration: 1 }, "<")
-          // [แก้ไข] เปลี่ยนเป้าหมายเป็น .moon-container แทน .moon เดิม
           .to(".moon-container", { opacity: 1, y: 0, duration: 1 }, "<") 
           .fromTo(".msg-4", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
         tl.addLabel("msg4");
